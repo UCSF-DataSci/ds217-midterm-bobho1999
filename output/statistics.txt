@@ -1,0 +1,5 @@
+===== Summary Statistics =====
+Mean: 43.1
+Median: 20
+Sum: 4314
+Count: 100
