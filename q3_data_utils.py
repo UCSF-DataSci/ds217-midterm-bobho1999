@@ -23,7 +23,7 @@ def load_data(filepath: str) -> pd.DataFrame:
         >>> df.shape
         (10000, 18)
     """
-    pass
+    return pd.read_csv(filepath)
 
 
 def clean_data(df: pd.DataFrame, remove_duplicates: bool = True,
@@ -42,8 +42,13 @@ def clean_data(df: pd.DataFrame, remove_duplicates: bool = True,
     Example:
         >>> df_clean = clean_data(df, sentinel_value=-999)
     """
-    pass
+    if remove_duplicates:
+        df_clean = df.drop_duplicates()
+        df_clean = df_clean.replace(sentinel_value, np.nan)
+    else:
+        df_clean = df.replace(sentinel_value, np.nan)
 
+    return df_clean
 
 def detect_missing(df: pd.DataFrame) -> pd.Series:
     """
@@ -60,7 +65,7 @@ def detect_missing(df: pd.DataFrame) -> pd.Series:
         >>> missing['age']
         15
     """
-    pass
+    return df.isnull().sum()
 
 
 def fill_missing(df: pd.DataFrame, column: str, strategy: str = 'mean') -> pd.DataFrame:
@@ -78,8 +83,14 @@ def fill_missing(df: pd.DataFrame, column: str, strategy: str = 'mean') -> pd.Da
     Example:
         >>> df_filled = fill_missing(df, 'age', strategy='median')
     """
-    pass
+    if strategy == 'mean':
+        df[column] = df[column].fillna(df[column].mean())
+    elif strategy == 'median':
+        df[column] = df[column].fillna(df[column].median())
+    elif strategy == 'ffill':
+        df[column] = df[column].ffill() 
 
+    return df
 
 def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
     """
@@ -111,8 +122,21 @@ def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
         >>> filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 65]}]
         >>> df_filtered = filter_data(df, filters)
     """
-    pass
+    df_filtered = df.copy()
 
+    for f in filters:
+        if f['condition'] == 'equals':
+            df_filtered = df_filtered[df_filtered[f['column']] == f['value']]
+        elif f['condition'] == 'greater_than':
+            df_filtered = df_filtered[df_filtered[f['column']] > f['value']]
+        elif f['condition'] == 'less_than':
+            df_filtered = df_filtered[df_filtered[f['column']] < f['value']]
+        elif f['condition'] == 'in_range':
+            df_filtered = df_filtered[df_filtered[f['column']].between(f['value'][0], f['value'][1])]
+        elif f['condition'] == 'in_list':
+            df_filtered = df_filtered[df_filtered[f['column']].isin(f['value'])]
+    
+    return df_filtered
 
 def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
     """
@@ -211,3 +235,30 @@ if __name__ == '__main__':
     # test_df = pd.DataFrame({'age': [25, 30, 35], 'bmi': [22, 25, 28]})
     # print("Test DataFrame created:", test_df.shape)
     # print("Test detect_missing:", detect_missing(test_df))
+
+    test_df = pd.DataFrame({'age': [25, 30, 35, 33], 
+                            'bmi': [25, -999, 28, 30], 
+                            'site': ['Site A', 'Site B', 'Site C', 'Site D']})
+    
+    #
+    df_clean = clean_data(test_df)
+    print("Test detect_missing:", detect_missing(df_clean))
+
+    #
+    test_missing = detect_missing(df_clean)
+    print(type(test_missing['bmi']))
+    
+    #
+    df_filled = fill_missing(df_clean, 'bmi', strategy='ffill')
+    print(df_filled)
+
+    filters = [{'column': 'age', 'condition': 'greater_than', 'value': 18}, 
+               {'column': 'age', 'condition': 'less_than', 'value': 29},
+               {'column': 'site', 'condition': 'in_list', 'value': ['Site A', 'Site B']}
+               ]
+    df_filtered = filter_data(df_filled, filters)
+
+    filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 31]}]
+    df_filtered = filter_data(df_filled, filters)
+
+    print(df_filtered)
