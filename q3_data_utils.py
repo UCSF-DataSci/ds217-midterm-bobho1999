@@ -158,7 +158,24 @@ def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
         ... }
         >>> df_typed = transform_types(df, type_map)
     """
-    pass
+
+    for colname, colType in type_map.items():
+        if colname not in df.columns:
+            raise ValueError(f"Error: Column {colname} not in the dataframe")
+        else:
+            if colType == 'datetime':
+                df[colname] = pd.to_datetime(df[colname], errors='coerce')
+            elif colType == 'numeric':
+                df[colname] = pd.to_numeric(df[colname], errors='coerce')
+            elif colType == 'category':
+                df[colname] = df[colname].astype('category')
+            elif colType == 'string':
+                df[colname] = df[colname].astype('string')
+            else:
+                raise ValueError("Data type not supported. Must be one of ['datetime', 'numeric', 'category', 'string']")
+        
+    return df
+
 
 
 def create_bins(df: pd.DataFrame, column: str, bins: list,
@@ -184,7 +201,13 @@ def create_bins(df: pd.DataFrame, column: str, bins: list,
         ...     labels=['<18', '18-34', '35-49', '50-64', '65+']
         ... )
     """
-    pass
+    if new_column == None:
+        colname = column+"_binned"
+        df[colname] = pd.cut(df[column], bins=bins, labels=labels)
+    else:
+        df[new_column] = pd.cut(df[column], bins=bins, labels=labels)
+    
+    return df
 
 
 def summarize_by_group(df: pd.DataFrame, group_col: str,
@@ -212,7 +235,10 @@ def summarize_by_group(df: pd.DataFrame, group_col: str,
         ...     {'age': ['mean', 'std'], 'bmi': 'mean'}
         ... )
     """
-    pass
+    if agg_dict == None:
+        return df.describe()
+    else:
+        return df.groupby(group_col, observed=True).agg(agg_dict)
 
 
 
@@ -236,29 +262,69 @@ if __name__ == '__main__':
     # print("Test DataFrame created:", test_df.shape)
     # print("Test detect_missing:", detect_missing(test_df))
 
-    test_df = pd.DataFrame({'age': [25, 30, 35, 33], 
-                            'bmi': [25, -999, 28, 30], 
-                            'site': ['Site A', 'Site B', 'Site C', 'Site D']})
+    # Create testing dataframe
+    print("==============================")
+    print("Preparing testing dataframe...")
+    test_df = pd.DataFrame({'age': [25, 30, 35, 50, 60], 
+                            'bmi': [25, -999, 28, 30, 19], 
+                            'site': ['Site A', 'Site B', 'Site C', 'Site C', 'Site B']})
     
-    #
+    # Test clean_data 
+    print("\n=== Testing clean data ===")
     df_clean = clean_data(test_df)
-    print("Test detect_missing:", detect_missing(df_clean))
+    print("Cleaned data:", df_clean)
 
-    #
-    test_missing = detect_missing(df_clean)
-    print(type(test_missing['bmi']))
+    # Testing detect_missing 
+    print("\n=== Test detect_missing ===")
+    print(detect_missing(df_clean))
     
-    #
+    # Test fill_missing
+    print("\n=== Testing fill_missing ===")
     df_filled = fill_missing(df_clean, 'bmi', strategy='ffill')
     print(df_filled)
 
+    # Test filter_data
+    print("\n=== Testing filter_data 1 ===")
     filters = [{'column': 'age', 'condition': 'greater_than', 'value': 18}, 
                {'column': 'age', 'condition': 'less_than', 'value': 29},
                {'column': 'site', 'condition': 'in_list', 'value': ['Site A', 'Site B']}
                ]
-    df_filtered = filter_data(df_filled, filters)
+    print(filter_data(df_filled, filters))
 
+    print("\n=== Testing filter_data 2 ===")
     filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 31]}]
-    df_filtered = filter_data(df_filled, filters)
+    print(filter_data(df_filled, filters))
 
-    print(df_filtered)
+    # Test create_bins
+    print("\n=== Testing create_bins ===")
+    df_binned = create_bins(
+        df_filled,
+        column='age',
+        bins=[0, 18, 35, 50, 65, 100],
+        labels=['<18', '18-34', '35-49', '50-64', '65+']
+        )
+    print(df_binned)
+
+    # Test transform_types
+    print("\n=== Testing transform_types ===")
+    type_map = {
+        'age': 'numeric',
+        'site': 'category'
+        }
+    df_typed = transform_types(df_filled, type_map)
+    print(df_typed.dtypes)
+
+    # Test transform_types
+    print("\n=== Testing summarize_by_group ===")
+    # Simple summary
+    print("=== Simple summary ===")
+    print(summarize_by_group(df_filled, 'site'))
+
+    # Custom aggregations
+    print("\n=== Custom aggregations ===")
+    summary = summarize_by_group(
+        df_filled,
+        'site',
+        {'age': ['mean', 'std'], 'bmi': 'mean'}
+        )
+    print(summary)
