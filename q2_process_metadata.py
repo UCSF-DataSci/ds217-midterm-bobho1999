@@ -26,7 +26,7 @@ def parse_config(filepath: str) -> dict:
     config = {}
     for i in content:
         k, v = i.split('=')
-        config[k] = int(v)
+        config[k] = str(v).strip() # Apperently there's a blank space at the end
 
     return config
 
@@ -55,17 +55,17 @@ def validate_config(config: dict) -> dict:
     # TODO: Implement with if/elif/else
     valid_result = {}
 
-    if (config.get('sample_data_rows', 0) > 0) and type(config.get('sample_data_rows', 0)) == int:
+    if (int(config['sample_data_rows']) > 0) and type(int(config['sample_data_rows'])) == int:
         valid_result['sample_data_rows'] = True
     else:
         valid_result['sample_data_rows'] = False
 
-    if (config.get('sample_data_min', 0) >= 1) and type(config.get('sample_data_min', 0)) == int:
+    if (int(config['sample_data_min']) >= 1) and type(int(config['sample_data_min'])) == int:
         valid_result['sample_data_min'] = True
     else:
         valid_result['sample_data_min'] = False
 
-    if (config.get('sample_data_max', 0) > config.get('sample_data_min', 0)) and type(config.get('sample_data_max', 0)) == int:
+    if (int(config['sample_data_max']) > int(config['sample_data_rows'])) and type(int(config['sample_data_max'])) == int:
         valid_result['sample_data_max'] = True
     else:
         valid_result['sample_data_max'] = False
@@ -95,9 +95,9 @@ def generate_sample_data(filename: str, config: dict) -> None:
     # TODO: Parse config values (convert strings to int)
     # TODO: Generate random numbers and save to file
     # TODO: Use random module with config-specified range
-    min = config.get('sample_data_min', 0)
-    max = config.get('sample_data_max', 0)
-    num = config.get('sample_data_rows', 0)
+    min = int(config.get('sample_data_min', 0))
+    max = int(config.get('sample_data_max', 0))
+    num = int(config.get('sample_data_rows', 0))
 
     import random
 
@@ -143,10 +143,10 @@ if __name__ == '__main__':
     # TODO: Save statistics to output/statistics.txt
 
     config = parse_config('q2_config.txt')
-    # print(config['sample_data_rows'])
+    print(config['sample_data_min'])
 
     validation = validate_config(config)
-    # print(validation['sample_data_rows'])
+    print(validation['sample_data_rows'])
 
     generate_sample_data('data/sample_data.csv', config)
 
