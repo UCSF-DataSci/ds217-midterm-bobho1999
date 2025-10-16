@@ -2,7 +2,7 @@
 # Assignment 5, Question 2: Python Data Processing
 # Process configuration files for data generation.
 
- #!/usr/bin/env python3
+#!/usr/bin/env python3
 
 def parse_config(filepath: str) -> dict:
     """
