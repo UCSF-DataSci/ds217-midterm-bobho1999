@@ -123,20 +123,21 @@ def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
         >>> filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 65]}]
         >>> df_filtered = filter_data(df, filters)
     """
+    df_filtered = df.copy()
 
     for f in filters:
         if f['condition'] == 'equals':
-            return df[df[f['column']] == f['value']]
+            df_filtered =  df_filtered[df_filtered[f['column']] == f['value']]
         elif f['condition'] == 'greater_than':
-            return df[df[f['column']] > f['value']]
+            df_filtered = df_filtered[df_filtered[f['column']] > f['value']]
         elif f['condition'] == 'less_than':
-            return df[df[f['column']] < f['value']]
+            df_filtered = df_filtered[df_filtered[f['column']] < f['value']]
         elif f['condition'] == 'in_range':
-            return df[df[f['column']].between(f['value'][0], f['value'][1])]
+            df_filtered = df_filtered[df_filtered[f['column']].between(f['value'][0], f['value'][1])]
         elif f['condition'] == 'in_list':
-            return df[df[f['column']].isin(f['value'])]
+            df_filtered = df_filtered[df_filtered[f['column']].isin(f['value'])]
     
-    return df
+    return df_filtered
 
 def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
     """
@@ -286,10 +287,10 @@ if __name__ == '__main__':
     # Test filter_data
     print("\n=== Testing filter_data 1 ===")
     filters = [{'column': 'age', 'condition': 'greater_than', 'value': 18}, 
-               {'column': 'age', 'condition': 'less_than', 'value': 29},
-               {'column': 'site', 'condition': 'in_list', 'value': ['Site A', 'Site B']}
+               {'column': 'site', 'condition': 'equals', 'value': 'Site A'}
                ]
     print(filter_data(df_filled, filters))
+    # print(df_filled[df_filled['site'] == 'Site A'])
 
     print("\n=== Testing filter_data 2 ===")
     filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 31]}]
