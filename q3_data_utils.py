@@ -3,6 +3,7 @@
 # Core reusable functions for data loading, cleaning, and transformation.
 #
 # These utilities will be imported and used in Q4-Q7 notebooks.
+ #!/usr/bin/env python3
 
 import pandas as pd
 import numpy as np
@@ -122,21 +123,20 @@ def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
         >>> filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 65]}]
         >>> df_filtered = filter_data(df, filters)
     """
-    df_filtered = df.copy()
 
     for f in filters:
         if f['condition'] == 'equals':
-            df_filtered = df_filtered[df_filtered[f['column']] == f['value']]
+            return df[df[f['column']] == f['value']]
         elif f['condition'] == 'greater_than':
-            df_filtered = df_filtered[df_filtered[f['column']] > f['value']]
+            return df[df[f['column']] > f['value']]
         elif f['condition'] == 'less_than':
-            df_filtered = df_filtered[df_filtered[f['column']] < f['value']]
+            return df[df[f['column']] < f['value']]
         elif f['condition'] == 'in_range':
-            df_filtered = df_filtered[df_filtered[f['column']].between(f['value'][0], f['value'][1])]
+            return df[df[f['column']].between(f['value'][0], f['value'][1])]
         elif f['condition'] == 'in_list':
-            df_filtered = df_filtered[df_filtered[f['column']].isin(f['value'])]
+            return df[df[f['column']].isin(f['value'])]
     
-    return df_filtered
+    return df
 
 def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
     """
