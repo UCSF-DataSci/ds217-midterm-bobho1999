@@ -1,0 +1,19 @@
+column name,missing_data_count,missing__data_percentage
+patient_id,0,0.0
+age,0,0.0
+sex,0,0.0
+bmi,438,4.38
+enrollment_date,0,0.0
+systolic_bp,414,4.14
+diastolic_bp,414,4.14
+cholesterol_total,554,5.54
+cholesterol_hdl,554,5.54
+cholesterol_ldl,554,5.54
+glucose_fasting,369,3.6900000000000004
+site,0,0.0
+intervention_group,0,0.0
+follow_up_months,0,0.0
+adverse_events,0,0.0
+outcome_cvd,0,0.0
+adherence_pct,1467,14.67
+dropout,0,0.0
