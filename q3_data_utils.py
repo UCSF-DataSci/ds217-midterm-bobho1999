@@ -242,7 +242,7 @@ def summarize_by_group(df: pd.DataFrame, group_col: str,
         ... )
     """
     if agg_dict == None:
-        return df.describe()
+        return df[group_col].describe()
     else:
         return df.groupby(group_col, observed=True).agg(agg_dict)
 
