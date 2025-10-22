@@ -43,11 +43,12 @@ def clean_data(df: pd.DataFrame, remove_duplicates: bool = True,
     Example:
         >>> df_clean = clean_data(df, sentinel_value=-999)
     """
+    df_clean = df.copy()
     if remove_duplicates:
-        df_clean = df.drop_duplicates()
+        df_clean = df_clean.drop_duplicates()
         df_clean = df_clean.replace(sentinel_value, np.nan)
     else:
-        df_clean = df.replace(sentinel_value, np.nan)
+        df_clean = df_clean.replace(sentinel_value, np.nan)
 
     return df_clean
 
@@ -84,14 +85,16 @@ def fill_missing(df: pd.DataFrame, column: str, strategy: str = 'mean') -> pd.Da
     Example:
         >>> df_filled = fill_missing(df, 'age', strategy='median')
     """
+    df_filled = df.copy()
+    
     if strategy == 'mean':
-        df[column] = df[column].fillna(df[column].mean())
+        df_filled[column] = df_filled[column].fillna(df_filled[column].mean())
     elif strategy == 'median':
-        df[column] = df[column].fillna(df[column].median())
+        df_filled[column] = df_filled[column].fillna(df_filled[column].median())
     elif strategy == 'ffill':
-        df[column] = df[column].ffill() 
+        df_filled[column] = df_filled[column].ffill() 
 
-    return df
+    return df_filled
 
 def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
     """
@@ -159,23 +162,24 @@ def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
         ... }
         >>> df_typed = transform_types(df, type_map)
     """
+    df_transformed = df.copy()
 
     for colname, colType in type_map.items():
-        if colname not in df.columns:
+        if colname not in df_transformed.columns:
             raise ValueError(f"Error: Column {colname} not in the dataframe")
         else:
             if colType == 'datetime':
-                df[colname] = pd.to_datetime(df[colname], errors='coerce')
+                df_transformed[colname] = pd.to_datetime(df_transformed[colname], errors='coerce')
             elif colType == 'numeric':
-                df[colname] = pd.to_numeric(df[colname], errors='coerce')
+                df_transformed[colname] = pd.to_numeric(df_transformed[colname], errors='coerce')
             elif colType == 'category':
-                df[colname] = df[colname].astype('category')
+                df_transformed[colname] = df_transformed[colname].astype('category')
             elif colType == 'string':
-                df[colname] = df[colname].astype('string')
+                df_transformed[colname] = df_transformed[colname].astype('string')
             else:
                 raise ValueError("Data type not supported. Must be one of ['datetime', 'numeric', 'category', 'string']")
         
-    return df
+    return df_transformed
 
 
 
@@ -202,13 +206,14 @@ def create_bins(df: pd.DataFrame, column: str, bins: list,
         ...     labels=['<18', '18-34', '35-49', '50-64', '65+']
         ... )
     """
+    df_binned = df.copy()
     if new_column == None:
         colname = column+"_binned"
-        df[colname] = pd.cut(df[column], bins=bins, labels=labels)
+        df_binned[colname] = pd.cut(df_binned[column], bins=bins, labels=labels)
     else:
-        df[new_column] = pd.cut(df[column], bins=bins, labels=labels)
+        df_binned[new_column] = pd.cut(df_binned[column], bins=bins, labels=labels)
     
-    return df
+    return df_binned
 
 
 def summarize_by_group(df: pd.DataFrame, group_col: str,
@@ -281,7 +286,9 @@ if __name__ == '__main__':
     
     # Test fill_missing
     print("\n=== Testing fill_missing ===")
+    print(df_clean)
     df_filled = fill_missing(df_clean, 'bmi', strategy='ffill')
+    print(df_clean)
     print(df_filled)
 
     # Test filter_data
