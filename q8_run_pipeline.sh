@@ -16,25 +16,37 @@ echo "Starting clinical trial data pipeline..." > reports/pipeline_log.txt
 # Add a log entry for each notebook execution or failure
 # jupyter nbconvert --execute --to notebook q4_exploration.ipynb
 # Run notebooks in sequence
-jupyter nbconvert --execute --to notebook q4_exploration.ipynb || {
-    echo "ERROR: Q4 exploratory data analysis failed"
+{
+    jupyter nbconvert --execute --to notebook q4_exploration.ipynb
+    echo "SUCCESS: Q4 exploratory data analysis executed" >> reports/pipeline_log.txt
+} || {
+    echo "ERROR: Q4 exploratory data analysis failed" >> reports/pipeline_log.txt
     exit 1
 }
 
-jupyter nbconvert --execute --to notebook q5_missing_data.ipynb || {
-    echo "ERROR: Q5 missing data analysis failed"
+{
+    jupyter nbconvert --execute --to notebook q5_missing_data.ipynb
+    echo "SUCCESS: Q5 missing data analysis executed" >> reports/pipeline_log.txt
+} || {
+    echo "ERROR: Q5 missing data analysis failed" >> reports/pipeline_log.txt
     exit 1
 }
 
-jupyter nbconvert --execute --to notebook q6_transformation.ipynb || {
-    echo "ERROR: Q6 Data Transformation failed"
+{
+    jupyter nbconvert --execute --to notebook q6_transformation.ipynb
+    echo "SUCCESS: Q6 Data Transformation executed" >> reports/pipeline_log.txt
+} || {
+    echo "ERROR: Q6 Data Transformation failed" >> reports/pipeline_log.txt
     exit 1
 }
 
-jupyter nbconvert --execute --to notebook q7_aggregation.ipynb || {
-    echo "ERROR: Q7 Group Operations & Final Analysis failed"
+{
+    jupyter nbconvert --execute --to notebook q7_aggregation.ipynb
+    echo "SUCCESS: Q7 Group Operations & Final Analysis executed" >> reports/pipeline_log.txt
+} || {
+    echo "ERROR: Q7 Group Operations & Final Analysis failed" >> reports/pipeline_log.txt
     exit 1
 }
 
-echo "Pipeline completed successfully!"
+echo "Pipeline completed successfully!" >> reports/pipeline_log.txt
 echo "Pipeline complete!" >> reports/pipeline_log.txt
