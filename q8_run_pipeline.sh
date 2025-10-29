@@ -1,8 +1,8 @@
+#!/bin/bash
+
 # TODO: Add shebang line: #!/bin/bash
 # Assignment 5, Question 8: Pipeline Automation Script
 # Run the clinical trial data analysis pipeline
-
-#!/bin/bash
 
 # NOTE: This script assumes Q1 has already been run to create directories and generate the dataset
 # NOTE: Q2 (q2_process_metadata.py) is a standalone Python fundamentals exercise, not part of the main pipeline

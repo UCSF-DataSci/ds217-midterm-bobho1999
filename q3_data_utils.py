@@ -44,11 +44,11 @@ def clean_data(df: pd.DataFrame, remove_duplicates: bool = True,
         >>> df_clean = clean_data(df, sentinel_value=-999)
     """
     df_clean = df.copy()
+
     if remove_duplicates:
         df_clean = df_clean.drop_duplicates()
-        df_clean = df_clean.replace(sentinel_value, np.nan)
-    else:
-        df_clean = df_clean.replace(sentinel_value, np.nan)
+    
+    df_clean = df_clean.replace(sentinel_value, np.nan)
 
     return df_clean
 
@@ -271,14 +271,14 @@ if __name__ == '__main__':
     # Create testing dataframe
     print("==============================")
     print("Preparing testing dataframe...")
-    test_df = pd.DataFrame({'age': [25, 30, 35, 50, 60], 
-                            'bmi': [25, -999, 28, 30, 19], 
-                            'site': ['Site A', 'Site B', 'Site C', 'Site C', 'Site B']})
+    test_df = pd.DataFrame({'age': [25, 30, 35, 50, 60, 60], 
+                            'bmi': [25, -999, 28, 30, 19, 19], 
+                            'site': ['Site A', 'Site B', 'Site C', 'Site C', 'Site B', 'Site B']})
     
     # Test clean_data 
     print("\n=== Testing clean data ===")
-    df_clean = clean_data(test_df)
-    print("Cleaned data:", df_clean)
+    df_clean = clean_data(test_df, False)
+    print("Cleaned data:\n", df_clean)
 
     # Testing detect_missing 
     print("\n=== Test detect_missing ===")
