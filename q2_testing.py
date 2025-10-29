@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from q2_process_metadata import parse_config, validate_config, generate_sample_data, calculate_statistics
 
 # Test parse_config
